@@ -40,7 +40,7 @@ cyd_touchcal/cyd_touchcal.ino      One-shot touch calibration sketch
 TFT_eSPI_Setup_CYD.h               TFT_eSPI pin/driver setup for the CYD
 streamdeck_bridge.py               PC bridge: serial listener + config pusher
 streamdeck_config.json             All button definitions and actions
-requirements.txt                   Python deps (pyserial)
+requirements.txt                   Python deps (pyserial; winsdk on Windows)
 ```
 
 ## Quick start
