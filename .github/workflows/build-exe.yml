@@ -1,0 +1,30 @@
+# Builds the one-file Windows bridge exe. Runs on demand, and on every
+# published release it attaches the exe as a release asset.
+name: build-windows-exe
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  exe:
+    runs-on: windows-latest
+    permissions:
+      contents: write # upload release asset
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pyinstaller
+      - run: pyinstaller --onefile --name cyddeck-bridge cyddeck_bridge.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cyddeck-bridge
+          path: dist/cyddeck-bridge.exe
+      - name: Attach to release
+        if: github.event_name == 'release'
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/cyddeck-bridge.exe
+        env:
+          GH_TOKEN: ${{ github.token }}

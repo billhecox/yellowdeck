@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""PC-side bridge for the CYD stream deck.
+"""PC-side bridge for the CydDeck.
 
 Listens on the CYD's USB serial port for "BTN:<id>" lines and runs the
-action mapped to that button in streamdeck_config.json.
+action mapped to that button in cyddeck_config.json.
 
-On connect (and whenever streamdeck_config.json changes) the bridge pushes
+On connect (and whenever cyddeck_config.json changes) the bridge pushes
 each button's label/icon/color to the firmware as
 "CFG:<id>:<icon>:<label>:<rrggbb>" lines, so the deck layout is fully
 driven by the JSON file — no reflash needed. It also polls the active
@@ -31,11 +31,56 @@ from pathlib import Path
 import serial
 from serial.tools import list_ports
 
-CONFIG_PATH = Path(__file__).with_name("streamdeck_config.json")
 IS_WINDOWS = sys.platform == "win32"
+
+# When frozen by PyInstaller, __file__ points into the temp extraction dir;
+# keep the config next to the exe instead so users can find and edit it.
+APP_DIR = (
+    Path(sys.executable).parent
+    if getattr(sys, "frozen", False)
+    else Path(__file__).resolve().parent
+)
+CONFIG_PATH = APP_DIR / "cyddeck_config.json"
+
+
+def default_config():
+    """Starter layout, with launch commands matching the current OS."""
+    def launch(linux, windows):
+        return windows if IS_WINDOWS else linux
+
+    media = [
+        ("Play", "play", "22CC44", "play_pause"),
+        ("Next", "next", "22CC44", "next"),
+        ("Prev", "prev", "22CC44", "previous"),
+        ("Vol +", "volup", "22AAFF", "volume_up"),
+        ("Vol -", "voldn", "22AAFF", "volume_down"),
+        ("Mute", "mute", "FF3311", "mute"),
+    ]
+    launches = [
+        ("Term", "term", "AAFF33", launch("gnome-terminal", "wt")),
+        ("Code", "code", "3BB3FF", "code"),
+        ("Music", "music", "FF1493",
+         launch("xdg-open https://music.youtube.com",
+                "start https://music.youtube.com")),
+        ("Lock", "lock", "FFEE00",
+         launch("loginctl lock-session",
+                "rundll32 user32.dll,LockWorkStation")),
+    ]
+    buttons = {}
+    for i, (label, icon, color, action) in enumerate(media):
+        buttons[str(i)] = {"label": label, "icon": icon, "color": color,
+                           "type": "media", "action": action}
+    for i, (label, icon, color, command) in enumerate(launches, start=len(media)):
+        buttons[str(i)] = {"label": label, "icon": icon, "color": color,
+                           "type": "launch", "command": command}
+    return {"port": "auto", "baud": 115200, "buttons": buttons}
 
 
 def load_config():
+    if not CONFIG_PATH.exists():
+        CONFIG_PATH.write_text(json.dumps(default_config(), indent=2) + "\n")
+        print(f"Created default config: {CONFIG_PATH}")
+        print("Edit it to customize buttons; changes apply live.")
     with open(CONFIG_PATH) as f:
         return json.load(f)
 
@@ -343,7 +388,7 @@ def session(ser, config):
                 handle(int(line[4:]), config)
             except ValueError:
                 print(f"  bad button line: {line!r}")
-        elif line.startswith("STREAMDECK READY"):
+        elif line.startswith("CYDDECK READY"):
             # Board (re)booted — its layout is back to defaults; re-push.
             print(f"[cyd] {line}")
             push_config(ser, config)

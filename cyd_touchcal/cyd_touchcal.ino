@@ -1,7 +1,7 @@
-// One-shot touch calibration for the CYD stream deck.
+// One-shot touch calibration for the CydDeck.
 // Shows 3 crosshairs in portrait; prints raw XPT2046 values for each tap:
 //   CAL<n> <rawx> <rawy>
-// then DONE. Used to derive the mapping baked into cyd_streamdeck.
+// then DONE. Used to derive the mapping baked into cyddeck.
 
 #include <SPI.h>
 #include <TFT_eSPI.h>
