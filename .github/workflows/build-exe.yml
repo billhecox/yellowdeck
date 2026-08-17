@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt pyinstaller
-      - run: pyinstaller --onefile --name yellowdeck-bridge yellowdeck_bridge.py
+      - run: pyinstaller --onefile --name yellowdeck-bridge --collect-all winrt yellowdeck_bridge.py
       - uses: actions/upload-artifact@v4
         with:
           name: yellowdeck-bridge

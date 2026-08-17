@@ -241,18 +241,26 @@ _winsdk_hint_shown = False
 
 
 def now_playing_windows():
-    """Track info via the Windows media-session API (winsdk package)."""
+    """Track info via the Windows media-session API (winrt or winsdk package)."""
     global _winsdk_hint_shown
+    import asyncio
     try:
-        import asyncio
-        from winsdk.windows.media.control import (
+        # winrt-Windows.Media.Control (maintained; Python 3.9+)
+        from winrt.windows.media.control import (
             GlobalSystemMediaTransportControlsSessionManager as SessionManager,
         )
     except ImportError:
-        if not _winsdk_hint_shown:
-            _winsdk_hint_shown = True
-            print("(pip install winsdk to enable the now-playing header)")
-        return None
+        try:
+            # winsdk (older, Python <3.12 only)
+            from winsdk.windows.media.control import (
+                GlobalSystemMediaTransportControlsSessionManager as SessionManager,
+            )
+        except ImportError:
+            if not _winsdk_hint_shown:
+                _winsdk_hint_shown = True
+                print('(pip install "winrt-Windows.Media.Control[all]" '
+                      "to enable the now-playing header)")
+            return None
 
     async def query():
         mgr = await SessionManager.request_async()
@@ -273,7 +281,7 @@ def now_playing_windows():
 def now_playing():
     """(state, title, artist) for the header; state is play/pause/stop.
 
-    None means "can't read track info here" (winsdk missing) — the bridge
+    None means "can't read track info here" (winrt/winsdk missing) — the bridge
     then simply never updates the header.
     """
     n = now_playing_windows() if IS_WINDOWS else now_playing_linux()

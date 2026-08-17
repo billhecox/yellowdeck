@@ -42,7 +42,7 @@ cyd_touchcal/cyd_touchcal.ino      One-shot touch calibration sketch
 TFT_eSPI_Setup_CYD.h               TFT_eSPI pin/driver setup for the CYD
 yellowdeck_bridge.py               PC bridge: serial listener + config pusher
 yellowdeck_config.json             All button definitions and actions
-requirements.txt                   Python deps (pyserial; winsdk on Windows)
+requirements.txt                   Python deps (pyserial; winrt on Windows)
 ```
 
 ## Quick start
@@ -108,7 +108,7 @@ To build the exe yourself (the `build-windows-exe` GitHub Action does the same o
 
 ```powershell
 pip install -r requirements.txt pyinstaller
-pyinstaller --onefile --name yellowdeck-bridge yellowdeck_bridge.py
+pyinstaller --onefile --name yellowdeck-bridge --collect-all winrt yellowdeck_bridge.py
 # result: dist\yellowdeck-bridge.exe
 ```
 
@@ -249,4 +249,4 @@ Adjust `WorkingDirectory`/`ExecStart` if the repo lives elsewhere. Logs: `journa
 ## Notes
 
 - Firmware defaults (the layout shown before the bridge connects) are in the `buttons[]` array in `yellowdeck.ino`; they're cosmetic — the JSON always wins once the bridge connects.
-- The bridge runs on Linux and Windows. Media actions use playerctl/MPRIS + wpctl/pactl/amixer on Linux, and synthesized media-key presses on Windows (routed by the OS to the active media session). The now-playing header works on both: MPRIS metadata on Linux, the Windows media-session API via the `winsdk` package (installed automatically from `requirements.txt` on Windows). `launch` commands are passed to the platform shell, so they're OS-specific — Windows equivalents of the default config: `wt` (terminal), `explorer` (files), `start https://music.youtube.com` (URLs), `calc`, `rundll32 user32.dll,LockWorkStation` (lock). Port `"auto"` picks the first USB-serial adapter on either OS; set `"port": "COM3"`-style if you have several. PRs for a macOS media backend welcome.
+- The bridge runs on Linux and Windows. Media actions use playerctl/MPRIS + wpctl/pactl/amixer on Linux, and synthesized media-key presses on Windows (routed by the OS to the active media session). The now-playing header works on both: MPRIS metadata on Linux, the Windows media-session API via the `winrt-Windows.Media.Control` package (installed automatically from `requirements.txt` on Windows). `launch` commands are passed to the platform shell, so they're OS-specific — Windows equivalents of the default config: `wt` (terminal), `explorer` (files), `start https://music.youtube.com` (URLs), `calc`, `rundll32 user32.dll,LockWorkStation` (lock). Port `"auto"` picks the first USB-serial adapter on either OS; set `"port": "COM3"`-style if you have several. PRs for a macOS media backend welcome.

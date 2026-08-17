@@ -1,2 +1,2 @@
 pyserial>=3.5
-winsdk>=1.0; sys_platform == "win32"
+winrt-Windows.Media.Control[all]>=3.2; sys_platform == "win32"
