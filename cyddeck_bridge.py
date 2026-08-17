@@ -82,7 +82,17 @@ def load_config():
         print(f"Created default config: {CONFIG_PATH}")
         print("Edit it to customize buttons; changes apply live.")
     with open(CONFIG_PATH) as f:
-        return json.load(f)
+        cfg = json.load(f)
+    # Validate the shape so a half-edited file can't crash the push loop.
+    buttons = cfg.get("buttons", {})
+    if not isinstance(buttons, dict):
+        raise ValueError('"buttons" must be an object')
+    for bid, entry in buttons.items():
+        if not bid.isdigit():
+            raise ValueError(f"button id {bid!r} is not a number")
+        if not isinstance(entry, dict):
+            raise ValueError(f"button {bid} must be an object")
+    return cfg
 
 
 def find_port(configured):
@@ -352,6 +362,7 @@ def session(ser, config):
     """Serve one serial connection until it errors out."""
     push_config(ser, config)
     mtime = config_mtime()
+    pending = mtime
     last_check = time.time()
     now = None
     last_now = 0.0
@@ -366,20 +377,25 @@ def session(ser, config):
                 now = n
                 ser.write(f"NOW:{n[0]}:{n[1]}:{n[2]}\n".encode())
 
-        # Hot-reload the config file when it changes (checked ~1/s,
-        # riding on the 1s serial read timeout).
+        # Hot-reload the config file when it changes (checked ~1/s, riding
+        # on the 1s serial read timeout). Editors with autosave write partial
+        # files mid-edit, so only reload once the mtime has been stable for a
+        # full check cycle, and keep the old config if the file won't parse.
         if time.time() - last_check >= 1:
             last_check = time.time()
             m = config_mtime()
-            if m != mtime:
+            if m != mtime and m == pending:
                 mtime = m
                 try:
+                    fresh = load_config()
+                except (json.JSONDecodeError, ValueError, OSError) as e:
+                    print(f"Config reload failed (keeping old): {e}")
+                else:
                     config.clear()
-                    config.update(load_config())
+                    config.update(fresh)
                     print("Config changed, reloading + repushing layout")
                     push_config(ser, config)
-                except (json.JSONDecodeError, OSError) as e:
-                    print(f"Config reload failed (keeping old): {e}")
+            pending = m
 
         if not line:
             continue
@@ -398,7 +414,13 @@ def session(ser, config):
 
 
 def main():
-    config = load_config()
+    while True:
+        try:
+            config = load_config()
+            break
+        except (json.JSONDecodeError, ValueError, OSError) as e:
+            print(f"Config invalid ({e}) — fix {CONFIG_PATH}, retrying in 3s...")
+            time.sleep(3)
     baud = config.get("baud", 115200)
 
     while True:
