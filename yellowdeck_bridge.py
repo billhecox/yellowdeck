@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""PC-side bridge for the CydDeck.
+"""PC-side bridge for the YellowDeck.
 
 Listens on the CYD's USB serial port for "BTN:<id>" lines and runs the
-action mapped to that button in cyddeck_config.json.
+action mapped to that button in yellowdeck_config.json.
 
-On connect (and whenever cyddeck_config.json changes) the bridge pushes
+On connect (and whenever yellowdeck_config.json changes) the bridge pushes
 each button's label/icon/color to the firmware as
 "CFG:<id>:<icon>:<label>:<rrggbb>" lines, so the deck layout is fully
 driven by the JSON file — no reflash needed. It also polls the active
@@ -40,7 +40,7 @@ APP_DIR = (
     if getattr(sys, "frozen", False)
     else Path(__file__).resolve().parent
 )
-CONFIG_PATH = APP_DIR / "cyddeck_config.json"
+CONFIG_PATH = APP_DIR / "yellowdeck_config.json"
 
 
 def default_config():
@@ -404,7 +404,7 @@ def session(ser, config):
                 handle(int(line[4:]), config)
             except ValueError:
                 print(f"  bad button line: {line!r}")
-        elif line.startswith("CYDDECK READY"):
+        elif line.startswith("YELLOWDECK READY"):
             # Board (re)booted — its layout is back to defaults; re-push.
             print(f"[cyd] {line}")
             push_config(ser, config)

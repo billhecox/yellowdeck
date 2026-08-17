@@ -18,13 +18,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt pyinstaller
-      - run: pyinstaller --onefile --name cyddeck-bridge cyddeck_bridge.py
+      - run: pyinstaller --onefile --name yellowdeck-bridge yellowdeck_bridge.py
       - uses: actions/upload-artifact@v4
         with:
-          name: cyddeck-bridge
-          path: dist/cyddeck-bridge.exe
+          name: yellowdeck-bridge
+          path: dist/yellowdeck-bridge.exe
       - name: Attach to release
         if: github.event_name == 'release'
-        run: gh release upload "${{ github.event.release.tag_name }}" dist/cyddeck-bridge.exe
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/yellowdeck-bridge.exe
         env:
           GH_TOKEN: ${{ github.token }}

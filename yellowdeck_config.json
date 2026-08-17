@@ -2,12 +2,13 @@
   "port": "auto",
   "baud": 115200,
   "buttons": {
+  
     "0": { "label": "Play",  "icon": "play",  "color": "22CC44", "type": "media",  "action": "play_pause" },
-    "1": { "label": "Next",  "icon": "next",  "color": "22CC44", "type": "media",  "action": "next" },
-    "2": { "label": "Prev",  "icon": "prev",  "color": "22CC44", "type": "media",  "action": "previous" },
-    "3": { "label": "Vol +", "icon": "volup", "color": "22AAFF", "type": "media",  "action": "volume_up" },
-    "4": { "label": "Vol -", "icon": "voldn", "color": "22AAFF", "type": "media",  "action": "volume_down" },
-    "5": { "label": "Mute",  "icon": "mute",  "color": "FF3311", "type": "media",  "action": "mute" },
+    "1": { "label": "Mute",  "icon": "mute",  "color": "FF3311", "type": "media",  "action": "mute" },
+    "2": { "label": "Next",  "icon": "next",  "color": "22CC44", "type": "media",  "action": "next" },
+    "3": { "label": "Prev",  "icon": "prev",  "color": "22CC44", "type": "media",  "action": "previous" },
+    "4": { "label": "Vol +", "icon": "volup", "color": "22AAFF", "type": "media",  "action": "volume_up" },
+    "5": { "label": "Vol -", "icon": "voldn", "color": "22AAFF", "type": "media",  "action": "volume_down" },
     "6": { "label": "Term",  "icon": "term",  "color": "AAFF33", "type": "launch", "command": "gnome-terminal" },
     "7": { "label": "Code",  "icon": "code",  "color": "3BB3FF", "type": "launch", "command": "code" },
     "8": { "label": "Music", "icon": "music", "color": "FF1493", "type": "launch", "command": "xdg-open https://music.youtube.com" },

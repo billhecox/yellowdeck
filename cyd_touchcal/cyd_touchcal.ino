@@ -1,7 +1,7 @@
-// One-shot touch calibration for the CydDeck.
+// One-shot touch calibration for the YellowDeck.
 // Shows 3 crosshairs in portrait; prints raw XPT2046 values for each tap:
 //   CAL<n> <rawx> <rawy>
-// then DONE. Used to derive the mapping baked into cyddeck.
+// then DONE. Used to derive the mapping baked into yellowdeck.
 
 #include <SPI.h>
 #include <TFT_eSPI.h>

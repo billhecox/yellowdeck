@@ -1,15 +1,15 @@
-// CydDeck — now-playing header + 10 touch buttons (2 cols x 5 rows,
+// YellowDeck — now-playing header + 10 touch buttons (2 cols x 5 rows,
 // portrait) with icons.
 //
 // Sends "BTN:<id>\n" over USB serial on each press; a Python bridge on the PC
-// (cyddeck_bridge.py) maps IDs to actions.
+// (yellowdeck_bridge.py) maps IDs to actions.
 //
 // Buttons are configurable at runtime over serial — no reflash needed:
 //   CFG:<id>:<icon>:<label>:<rrggbb>\n
 // e.g. CFG:0:play:Play:22CC44
 // The header shows player status/track info pushed by the bridge:
 //   NOW:<play|pause|stop>:<title>:<artist>\n
-// The bridge pushes the layout from cyddeck_config.json on connect and
+// The bridge pushes the layout from yellowdeck_config.json on connect and
 // whenever the file changes.
 //
 // Board: ESP32-2432S028R "Cheap Yellow Display"
@@ -412,7 +412,7 @@ void handleNow(char *args) {
 void handleLine(char *line) {
   if (strncmp(line, "CFG:", 4) == 0) handleCfg(line + 4);
   else if (strncmp(line, "NOW:", 4) == 0) handleNow(line + 4);
-  else if (strcmp(line, "PING") == 0) Serial.println("CYDDECK READY 10");
+  else if (strcmp(line, "PING") == 0) Serial.println("YELLOWDECK READY 10");
 }
 
 void pollSerial() {
@@ -449,7 +449,7 @@ void setup() {
   drawHeader();
   for (int i = 0; i < NUM_BUTTONS; i++) drawButton(i, false);
 
-  Serial.println("CYDDECK READY 10");
+  Serial.println("YELLOWDECK READY 10");
 }
 
 void loop() {
