@@ -2,6 +2,8 @@
 
 A DIY touchscreen macro deck ("YellowDeck") built from a $10 **ESP32-2432S028R "Cheap Yellow Display" (CYD)** — a 2.8" 240×320 touchscreen ESP32 board. The screen shows a now-playing header (player status + track info) above 10 icon buttons (2 columns × 5 rows, portrait); tapping a button sends the button ID over USB serial to a small Python bridge on the PC, which runs the mapped action: media controls, launching apps, or any shell command.
 
+<p align="center"><img src="docs/yellowdeck.jpg" width="380" alt="YellowDeck: now-playing header showing the current track above the 2x5 grid of icon buttons"></p>
+
 **Everything about the buttons — label, icon, color, and action — lives in one JSON file on the PC.** The bridge pushes the layout to the device over serial, so you never reflash to reconfigure. Edit `yellowdeck_config.json`, save, and the deck redraws within a second.
 
 ```
